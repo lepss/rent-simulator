@@ -7,7 +7,8 @@ export const achatSchema = z.object({
   prixFAI: z.number().min(0),
   fraisAcquisition: z.number().min(0),
   tauxAcquisition: z.number().int().min(0),
-  aCharge: z.boolean(),
+  aCharge: z.string(),
+  fraisAvocat: z.number().min(0),
 });
 
 export type AchatValues = z.infer<typeof achatSchema>;
