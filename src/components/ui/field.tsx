@@ -1,4 +1,5 @@
 import { formatNumber, unformatNumber } from "@/lib/utils";
+import clsx from "clsx";
 import type { InputHTMLAttributes } from "react";
 import { useEffect, useState } from "react";
 import { Input } from "./input";
@@ -11,6 +12,7 @@ interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
   unit?: string;
   error?: string;
   value: number | string;
+  className?: string;
 }
 
 export const Field = ({
@@ -21,6 +23,7 @@ export const Field = ({
   error,
   value,
   onChange,
+  className,
   ...rest
 }: FieldProps) => {
   const [displayValue, setDisplayValue] = useState("");
@@ -45,7 +48,7 @@ export const Field = ({
   };
 
   return (
-    <div className="w-full flex flex-col gap-1">
+    <div className={clsx(className, "w-full flex flex-col gap-1")}>
       <Label htmlFor={id}>{label}</Label>
       <Input
         id={id}

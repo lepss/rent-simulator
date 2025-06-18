@@ -137,3 +137,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media print {
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .print-footer {
+    /* position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px; */
+  }
+}

@@ -26,7 +26,10 @@ export const FinancementForm = () => {
 
   return (
     <SectionLayout title="financement" icon={LandmarkIcon}>
-      <form id="financement-form" className="flex flex-col gap-5 md:gap-4">
+      <form
+        id="financement-form"
+        className="flex flex-col gap-4 md:gap-4 print:gap-0"
+      >
         <div className="flex flex-col w-full items-center gap-0 md:gap-2 md:flex-row">
           <Controller
             name="apport"
@@ -46,7 +49,7 @@ export const FinancementForm = () => {
             )}
           />
           <ArrowLeftRightIcon size={30} className="hidden md:block" />
-          <ArrowUpDownIcon size={15} className="block md:hidden" />
+          <ArrowUpDownIcon size={15} className="block md:hidden print:hidden" />
           <Controller
             name="tauxApport"
             control={control}

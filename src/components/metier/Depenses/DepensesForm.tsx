@@ -29,6 +29,9 @@ export const DepensesForm = () => {
             key={field.id}
             className="flex flex-col w-full items-center gap-0 md:gap-2 md:flex-row"
           >
+            <div className="hidden print:block">
+              <h2 className="text-2xl font-bold">Dépense n° {index + 1}</h2>
+            </div>
             <Controller
               name={`depenses.${index}.nom`}
               control={control}
@@ -80,7 +83,7 @@ export const DepensesForm = () => {
                   <Label htmlFor="tauxTVA">Taux TVA</Label>
                   <select
                     id={`depense-tauxTVA-${index}`}
-                    className="w-full border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+                    className="w-full border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 print:bg-white print:border-none print:shadow-none print:appearance-none print:text-xl"
                     aria-invalid={!!errors.depenses?.[index]?.tauxTVA}
                     aria-describedby={`depense-tauxTVA-${index}-error`}
                     value={field.value}
@@ -166,11 +169,11 @@ export const DepensesForm = () => {
                         onClick={toggleLot}
                         className="flex items-center gap-1 cursor-pointer select-none group"
                       >
-                        <span className="text-xs w-10 truncate">
+                        <span className="text-sm truncate md:text-[9px] md:w-6">
                           Lot n°{lot.id + 1}
                         </span>
                         <div
-                          className={`w-3 h-3 rounded-full border-2 transition-colors 
+                          className={`w-5 h-5 rounded-full border-2 transition-colors md:w-3 md:h-3 
               ${
                 isSelected
                   ? "bg-amber-400 border-amber-400"
@@ -187,11 +190,12 @@ export const DepensesForm = () => {
             <button
               type="button"
               onClick={() => remove(index)}
-              className="text-red-600 hover:text-red-800 mt-4 ml-0 cursor-pointer md:ml-4 md:mt-0"
+              className="text-red-600 hover:text-red-800 mt-4 ml-0 cursor-pointer md:ml-4 md:mt-0 print:hidden"
               aria-label={`Supprimer la dépense ${index + 1}`}
             >
               <Trash2Icon size={20} />
             </button>
+            {index !== fields.length - 1 && <div className="page-break" />}
           </div>
         ))}
       </form>
@@ -199,6 +203,7 @@ export const DepensesForm = () => {
       <div className="flex items-center justify-center my-4">
         <Button
           type="button"
+          className="print:hidden"
           onClick={() =>
             append({
               id: fields.length - 1,

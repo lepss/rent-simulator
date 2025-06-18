@@ -15,7 +15,7 @@ export const Card = ({ label, className, value, unit }: CardProps) => {
         " flex flex-col gap-8 rounded-3xl p-4 justify-between w-full"
       )}
     >
-      <span className="text-xl font-medium">{label}</span>
+      <span className="text-xl font-medium print:text-2xl">{label}</span>
       <span className="text-3xl font-bold text-right">
         {value.toLocaleString("fr-FR")} {unit}
       </span>

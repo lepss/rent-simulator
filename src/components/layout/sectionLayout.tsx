@@ -37,11 +37,14 @@ export const SectionLayout = ({
                   <Icon size={32} color="white" className="" />
                 </div>
               )}
-              <h2 className="text-2xl font-bold capitalize">{title}</h2>
+              <h2 className="text-2xl font-bold capitalize print:text-4xl">
+                {title}
+              </h2>
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <Separator className="my-4" />
+            <Separator className="my-4 print:hidden" />
+            <div className="hidden my-4 print:block"></div>
             {children}
           </AccordionContent>
         </AccordionItem>

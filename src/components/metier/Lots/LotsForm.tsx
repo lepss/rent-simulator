@@ -15,13 +15,16 @@ export const LotsForm = () => {
 
   return (
     <SectionLayout title="lots" icon={Layers3Icon}>
-      <form id="lots-form" className="flex flex-col gap-10 md:gap-4">
+      <form id="lots-form" className="flex flex-col gap-10 md:gap-4 print:md-4">
         {fields.map((field, index) => (
           <div
             key={field.id}
-            className="flex flex-col w-full items-center gap-0 md:flex-row md:gap-2"
+            className="flex flex-col w-full items-center gap-0 md:flex-row md:gap-2 print:gap-2"
           >
-            <div className="w-full flex flex-col gap-2">
+            <div className="hidden print:block">
+              <h2 className="text-2xl font-bold">Lot n° {index + 1}</h2>
+            </div>
+            <div className="w-full flex flex-col gap-2 print:hidden">
               <Label htmlFor={`lots.${index}.numero`}>N° Lot</Label>
               <Input
                 type="text"
@@ -67,6 +70,7 @@ export const LotsForm = () => {
                   label="Prix de revente"
                   id={`lots.${index}.prixVente`}
                   unit="€"
+                  className=""
                   error={errors.lots?.[index]?.prixVente?.message}
                   value={field.value}
                   onChange={(e) => field.onChange(parseValue(e.target.value))}
@@ -112,7 +116,7 @@ export const LotsForm = () => {
                     id={`lots.${index}.tva`}
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.value)}
-                    className="w-full border-input data-[placeholder]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full border-input data-[placeholder]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 print:bg-white print:border-none print:shadow-none print:appearance-none print:text-xl"
                     aria-invalid={!!errors.lots?.[index]?.tva}
                     aria-describedby={`lots.${index}.tva-error`}
                   >
@@ -152,17 +156,19 @@ export const LotsForm = () => {
             <button
               type="button"
               onClick={() => remove(index)}
-              className="text-red-600 cursor-pointer hover:text-red-800"
+              className="text-red-600 cursor-pointer print:hidden hover:text-red-800"
               aria-label={`Supprimer le lot ${index + 1}`}
             >
               <Trash2Icon size={20} />
             </button>
+            {index !== fields.length - 1 && <div className="page-break" />}
           </div>
         ))}
       </form>
       <div className="flex items-center justify-center my-4">
         <Button
           type="button"
+          className="print:hidden"
           onClick={() =>
             append({
               id: fields.length - 1,
@@ -179,10 +185,14 @@ export const LotsForm = () => {
           Ajouter un lot
         </Button>
       </div>
-      <Separator className="mt-4 mb-2" />
-      <div className="flex flex-col items-end font-bold uppercase">
-        <p className="text-sm">Total ventes</p>
-        <p className="text-2xl">{totalVentesLots.toLocaleString("fr-FR")} €</p>
+      <div className="print-footer">
+        <Separator className="mt-4 mb-2" />
+        <div className="flex flex-col items-end font-bold uppercase">
+          <p className="text-sm">Total ventes</p>
+          <p className="text-2xl">
+            {totalVentesLots.toLocaleString("fr-FR")} €
+          </p>
+        </div>
       </div>
     </SectionLayout>
   );

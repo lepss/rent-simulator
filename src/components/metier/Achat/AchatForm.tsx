@@ -24,7 +24,10 @@ export const AchatForm = () => {
 
   return (
     <SectionLayout title="achats" icon={HouseIcon}>
-      <form id="achat-form" className="flex flex-col gap-5 md:gap-4">
+      <form
+        id="achat-form"
+        className="flex flex-col gap-5 md:gap-4 print:gap-0"
+      >
         <div className="flex flex-col w-full items-center gap-0 md:flex-row md:gap-2">
           <Controller
             name="prixNetVendeur"
@@ -64,7 +67,7 @@ export const AchatForm = () => {
                 <select
                   id="a-charge"
                   disabled={disabled}
-                  className="w-full border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+                  className="w-full border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 print:bg-white print:border-none print:shadow-none print:appearance-none print:text-xl"
                   aria-invalid={!!errors.aCharge}
                   aria-describedby="a-charge-error"
                   value={field.value}
@@ -122,7 +125,7 @@ export const AchatForm = () => {
             )}
           />
           <ArrowLeftRightIcon size={40} className="hidden md:block" />
-          <ArrowUpDownIcon size={15} className="block md:hidden" />
+          <ArrowUpDownIcon size={15} className="block md:hidden print:hidden" />
           <Controller
             name="tauxAcquisition"
             control={control}
@@ -161,14 +164,17 @@ export const AchatForm = () => {
           />
         </div>
       </form>
-
-      <Separator className="mt-4 mb-2" />
-      <div className="flex flex-col items-end font-bold uppercase">
-        <p className="text-sm">Coût total</p>
-        <p className="text-2xl">
-          {values && values.prixFAI ? achatTotal.toLocaleString("fr-FR") : "0"}{" "}
-          €
-        </p>
+      <div className="print-footer">
+        <Separator className="mt-4 mb-2" />
+        <div className="flex flex-col items-end font-bold uppercase">
+          <p className="text-sm">Coût total</p>
+          <p className="text-2xl">
+            {values && values.prixFAI
+              ? achatTotal.toLocaleString("fr-FR")
+              : "0"}{" "}
+            €
+          </p>
+        </div>
       </div>
     </SectionLayout>
   );
