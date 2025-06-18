@@ -1,181 +1,190 @@
 import { SectionLayout } from "@/components/layout/sectionLayout";
 import { Button } from "@/components/ui/button";
+import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useSimulationStore } from "@/hooks/useGlobalSimulation";
-import {
-  depenseSchema,
-  type DepenseValues,
-} from "@/lib/validations/depense.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { parseValue } from "@/lib/utils";
 import { ChartPieIcon, PlusCircleIcon, Trash2Icon } from "lucide-react";
-import { useEffect } from "react";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
-import { z } from "zod";
-import { calculateDepenses } from "./useDepenses";
-
-type FormValues = {
-  depenses: DepenseValues[];
-};
-
-const formSchema = z.object({
-  depenses: depenseSchema.array(),
-});
+import { Controller } from "react-hook-form";
+import { useDepensesForm } from "./useDepensesForm";
 
 export const DepensesForm = () => {
-  const setDepenses = useSimulationStore((state) => state.setDepenses);
-  const setTotalDepenses = useSimulationStore(
-    (state) => state.setTotalDepenses
-  );
-  const totalDepenses = useSimulationStore((state) => state.totalDepenses);
-
-  const { register, control, setValue } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      depenses: [
-        {
-          nom: "",
-          prixHT: 0,
-          tauxTVA: 0,
-          TVA: 0,
-          prixTTC: 0,
-          quantite: 1,
-          lotsIndex: [],
-        },
-      ],
-    },
-  });
-
-  const { fields, append, remove } = useFieldArray({
+  const {
     control,
-    name: "depenses",
-  });
-
-  const depenses = useWatch({ control, name: "depenses" });
-
-  useEffect(() => {
-    if (!depenses) return;
-
-    const updated = depenses.map((d) => ({
-      ...d,
-      prixTTC: d?.prixTTC ?? 0,
-      tauxTVA: d?.tauxTVA ?? 0,
-      quantite: d?.quantite ?? 1,
-    }));
-
-    updated.forEach((depense, i) => {
-      // Calcul prixHT et TVA à partir du TTC et tauxTVA
-      const prixHT =
-        depense.tauxTVA > 0
-          ? +(depense.prixTTC / (1 + depense.tauxTVA / 100)).toFixed(2)
-          : depense.prixTTC;
-
-      const tva = +(depense.prixTTC - prixHT).toFixed(2);
-
-      if (prixHT !== depense.prixHT) {
-        setValue(`depenses.${i}.prixHT`, prixHT, { shouldDirty: true });
-        depense.prixHT = prixHT;
-      }
-
-      if (tva !== depense.TVA) {
-        setValue(`depenses.${i}.TVA`, tva, { shouldDirty: true });
-        depense.TVA = tva;
-      }
-    });
-
-    const validDepenses = updated.filter(
-      (d): d is DepenseValues =>
-        d &&
-        typeof d.nom === "string" &&
-        typeof d.prixHT === "number" &&
-        typeof d.tauxTVA === "number" &&
-        typeof d.TVA === "number" &&
-        typeof d.prixTTC === "number" &&
-        typeof d.quantite === "number"
-    );
-
-    const total = calculateDepenses(validDepenses);
-
-    setDepenses(validDepenses);
-    setTotalDepenses(total);
-  }, [depenses, setDepenses, setTotalDepenses, setValue]);
+    errors,
+    register,
+    fields,
+    append,
+    remove,
+    totalDepenses,
+    lots,
+  } = useDepensesForm();
 
   return (
     <SectionLayout title="Dépenses" icon={ChartPieIcon}>
       <form id="depenses-form" className="flex flex-col gap-4">
         {fields.map((field, index) => (
           <div key={field.id} className="flex w-full items-center gap-2">
-            <div className="w-full flex flex-col gap-2">
-              <Label htmlFor={`depenses.${index}.nom`}>Nom</Label>
-              <Input
-                type="text"
-                id={`depenses.${index}.nom`}
-                placeholder="Ex : Peinture"
-                {...register(`depenses.${index}.nom` as const)}
-              />
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              <Label htmlFor={`depenses.${index}.prixHT`}>Prix HT</Label>
-              <Input
-                type="number"
-                id={`depenses.${index}.prixHT`}
-                unit="€"
-                readOnly
-                {...register(`depenses.${index}.prixHT` as const, {
-                  valueAsNumber: true,
-                })}
-              />
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              <Label htmlFor={`depenses.${index}.tauxTVA`}>Taux TVA</Label>
-              <Input
-                type="number"
-                id={`depenses.${index}.tauxTVA`}
-                unit="%"
-                {...register(`depenses.${index}.tauxTVA` as const, {
-                  valueAsNumber: true,
-                })}
-              />
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              <Label htmlFor={`depenses.${index}.TVA`}>TVA</Label>
-              <Input
-                type="number"
-                id={`depenses.${index}.TVA`}
-                unit="€"
-                readOnly
-                {...register(`depenses.${index}.TVA` as const, {
-                  valueAsNumber: true,
-                })}
-              />
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              <Label htmlFor={`depenses.${index}.prixTTC`}>Prix TTC</Label>
-              <Input
-                type="number"
-                id={`depenses.${index}.prixTTC`}
-                unit="€"
-                {...register(`depenses.${index}.prixTTC` as const, {
-                  valueAsNumber: true,
-                })}
-              />
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              <Label htmlFor={`depenses.${index}.quantite`}>Quantité</Label>
-              <Input
-                type="number"
-                id={`depenses.${index}.quantite`}
-                {...register(`depenses.${index}.quantite` as const, {
-                  valueAsNumber: true,
-                })}
-              />
-            </div>
+            <Controller
+              name={`depenses.${index}.nom`}
+              control={control}
+              render={({ field }) => (
+                <div className="w-full flex flex-col gap-2">
+                  <Label htmlFor={`depenses.${index}.nom`}>Nom</Label>
+                  <Input
+                    type="text"
+                    id={`depenses.${index}.nom`}
+                    aria-invalid={!!errors.depenses?.[index]?.nom}
+                    aria-describedby={`depenses.${index}.nom-error`}
+                    value={field.value}
+                    placeholder="Ex : Peinture"
+                    {...register(`depenses.${index}.nom` as const)}
+                  />
+                  <p
+                    id={`depenses.${index}.nom-error`}
+                    className={`text-sm h-4 transition-all ${
+                      errors.depenses?.[index]?.nom
+                        ? "text-red-500"
+                        : "text-transparent"
+                    }`}
+                  >
+                    {errors.depenses?.[index]?.nom?.message || ""}
+                  </p>
+                </div>
+              )}
+            />
+            <Controller
+              name={`depenses.${index}.prixHT`}
+              control={control}
+              render={({ field }) => (
+                <Field
+                  label="Prix HT"
+                  id={`depense-prixHT-${index}`}
+                  unit="€"
+                  readOnly
+                  error={errors?.depenses?.[index]?.prixHT?.message}
+                  value={field.value}
+                  onChange={(e) => field.onChange(parseValue(e.target.value))}
+                />
+              )}
+            />
+            <Controller
+              name={`depenses.${index}.tauxTVA`}
+              control={control}
+              render={({ field }) => (
+                <div className="w-full flex flex-col gap-2">
+                  <Label htmlFor="tauxTVA">Taux TVA</Label>
+                  <select
+                    id={`depense-tauxTVA-${index}`}
+                    className="w-full border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+                    aria-invalid={!!errors.depenses?.[index]?.tauxTVA}
+                    aria-describedby={`depense-tauxTVA-${index}-error`}
+                    value={field.value}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  >
+                    <option value={0}>0 %</option>
+                    <option value={5}>5 %</option>
+                    <option value={10}>10 %</option>
+                    <option value={20}>20 %</option>
+                  </select>
+                  <p
+                    id={`depense-tauxTVA-${index}-error`}
+                    className={`text-sm h-4 transition-all ${
+                      errors.depenses?.[index]?.tauxTVA
+                        ? "text-red-500"
+                        : "text-transparent"
+                    }`}
+                  >
+                    {errors.depenses?.[index]?.tauxTVA?.message || ""}
+                  </p>
+                </div>
+              )}
+            />
+            <Controller
+              name={`depenses.${index}.TVA`}
+              control={control}
+              render={({ field }) => (
+                <Field
+                  label="TVA"
+                  id={`depense-TVA-${index}`}
+                  unit="€"
+                  readOnly
+                  error={errors?.depenses?.[index]?.TVA?.message}
+                  value={field.value}
+                  onChange={(e) => field.onChange(parseValue(e.target.value))}
+                />
+              )}
+            />
+            <Controller
+              name={`depenses.${index}.prixTTC`}
+              control={control}
+              render={({ field }) => (
+                <Field
+                  label="Prix TTC"
+                  id={`depense-prixTTC-${index}`}
+                  unit="€"
+                  error={errors?.depenses?.[index]?.prixTTC?.message}
+                  value={field.value}
+                  onChange={(e) => field.onChange(parseValue(e.target.value))}
+                />
+              )}
+            />
+            <Controller
+              name={`depenses.${index}.quantite`}
+              control={control}
+              render={({ field }) => (
+                <Field
+                  label="Quantité"
+                  id={`depense-quantite-${index}`}
+                  error={errors?.depenses?.[index]?.quantite?.message}
+                  value={field.value}
+                  onChange={(e) => field.onChange(parseValue(e.target.value))}
+                />
+              )}
+            />
+            <Controller
+              name={`depenses.${index}.lotsIndex`}
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-1">
+                  {lots.map((lot) => {
+                    const isSelected = field.value?.includes(lot.id);
+                    const toggleLot = () => {
+                      const updated = isSelected
+                        ? field.value.filter((id: number) => id !== lot.id)
+                        : [...(field.value || []), lot.id];
+                      field.onChange(updated);
+                    };
+
+                    return (
+                      <div
+                        key={lot.id}
+                        onClick={toggleLot}
+                        className="flex items-center gap-1 cursor-pointer select-none group"
+                      >
+                        <span className="text-xs w-10 truncate">
+                          Lot n°{lot.id + 1}
+                        </span>
+                        <div
+                          className={`w-3 h-3 rounded-full border-2 transition-colors 
+              ${
+                isSelected
+                  ? "bg-amber-400 border-amber-400"
+                  : "bg-white border-amber-400"
+              }`}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            />
 
             <button
               type="button"
               onClick={() => remove(index)}
-              className="mt-5 text-red-600 hover:text-red-800"
+              className="text-red-600 hover:text-red-800 ml-4"
               aria-label={`Supprimer la dépense ${index + 1}`}
             >
               <Trash2Icon size={20} />
@@ -189,6 +198,7 @@ export const DepensesForm = () => {
           type="button"
           onClick={() =>
             append({
+              id: fields.length - 1,
               nom: "",
               prixHT: 0,
               tauxTVA: 0,
@@ -200,14 +210,14 @@ export const DepensesForm = () => {
           }
         >
           <PlusCircleIcon size={8} />
-          Ajouter une dépense
+          <p>Ajouter une dépense</p>
         </Button>
       </div>
 
-      <Separator className="my-4" />
-      <div className="flex flex-col items-end text-xl font-bold uppercase">
+      <Separator className="mt-4" />
+      <div className="flex flex-col items-end font-bold uppercase">
         <p className="text-sm">Total dépenses</p>
-        <p>{totalDepenses.toLocaleString("fr-FR")} €</p>
+        <p className="text-2xl">{totalDepenses.toLocaleString("fr-FR")} €</p>
       </div>
     </SectionLayout>
   );

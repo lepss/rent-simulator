@@ -1,13 +1,26 @@
-// /lib/validations/achat.ts
 import * as z from "zod";
 
 export const lotSchema = z.object({
-  nom: z.string().min(0),
-  prixVente: z.number().min(0),
-  surface: z.number().min(0),
-  prixM2: z.number().min(0),
-  tva: z.string().min(0),
-  ponderation: z.number().int().min(0),
+  id: z.number(),
+  nom: z
+    .string({ invalid_type_error: "Doit être une chaîne de caractères" })
+    .min(1, { message: "Le nom est requis" }),
+  prixVente: z
+    .number({ invalid_type_error: "Doit être un nombre" })
+    .min(0, { message: "Doit être ≥ 0" }),
+  surface: z
+    .number({ invalid_type_error: "Doit être un nombre" })
+    .min(0, { message: "Doit être ≥ 0" }),
+  prixM2: z
+    .number({ invalid_type_error: "Doit être un nombre" })
+    .min(0, { message: "Doit être ≥ 0" }),
+  tva: z
+    .string({ invalid_type_error: "Doit être une chaîne de caractères" })
+    .min(1, { message: "La TVA est requise" }),
+  ponderation: z
+    .number({ invalid_type_error: "Doit être un nombre entier" })
+    .int({ message: "Doit être un entier" })
+    .min(0, { message: "Doit être ≥ 0" }),
 });
 
 export type LotValues = z.infer<typeof lotSchema>;
