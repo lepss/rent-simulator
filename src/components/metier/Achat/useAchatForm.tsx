@@ -15,6 +15,7 @@ export const useAchatForm = () => {
     watch,
     setValue,
     control,
+    reset,
     formState: { errors },
   } = useForm<AchatValues>({
     resolver: zodResolver(achatSchema),
@@ -46,6 +47,7 @@ export const useAchatForm = () => {
     let newPrixFAI = prixNetVendeur;
     if (aCharge === "acquereur") newPrixFAI += fraisAgence;
     if (newPrixFAI !== prixFAI) setValue("prixFAI", newPrixFAI);
+    console.log("prixFAI", newPrixFAI);
   }, [prixNetVendeur, fraisAgence, aCharge, prixFAI, setValue]);
 
   // Calcul du frais en fonction du taux si Prix FAI est renseigné
@@ -54,6 +56,7 @@ export const useAchatForm = () => {
       const newFrais = Math.round(prixFAI * (Number(taux) / 100));
       setValue("fraisAcquisition", newFrais);
     }
+    console.log("taux", taux);
   }, [taux, prixFAI, setValue]);
 
   // Calcul du taux en fonction du frais si Prix FAI est renseigné
@@ -62,19 +65,33 @@ export const useAchatForm = () => {
       const newTaux = (Number(frais) / prixFAI) * 100;
       setValue("tauxAcquisition", Math.round(newTaux * 100) / 100);
     }
+    console.log("frais", frais);
   }, [frais, prixFAI, setValue]);
 
   // Store values + calcul du prix total achat
   useEffect(() => {
     setAchat(values);
     setAchatTotal(calculateAchat(values));
+    console.log("values", values);
   }, [values, setAchat, setAchatTotal]);
+
+  // Nouvelle fonction pour importer / synchroniser finement
+  const setFormValues = (newValues: AchatValues) => {
+    console.log("setFormValues");
+
+    // Reset form with new values
+    reset(newValues);
+    // Mettre à jour store (peut être redondant si effet useEffect ci-dessus fonctionne bien)
+    setAchat(newValues);
+    setAchatTotal(calculateAchat(newValues));
+  };
 
   return {
     register,
     watch,
     control,
     errors,
+    reset,
     handleFraisChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       lastEdited.current = "frais";
       register("fraisAcquisition").onChange(e);
@@ -84,5 +101,6 @@ export const useAchatForm = () => {
       register("tauxAcquisition").onChange(e);
     },
     achatTotal,
+    setFormValues,
   };
 };

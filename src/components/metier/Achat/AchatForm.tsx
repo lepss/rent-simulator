@@ -7,7 +7,11 @@ import { ArrowLeftRightIcon, HouseIcon } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { useAchatForm } from "./useAchatForm";
 
-export const AchatForm = () => {
+type AchatFormProps = {
+  achatForm: ReturnType<typeof useAchatForm>;
+};
+
+export const AchatForm = ({ achatForm }: AchatFormProps) => {
   const {
     control,
     watch,
@@ -16,8 +20,7 @@ export const AchatForm = () => {
     handleTauxChange,
     achatTotal,
     register,
-  } = useAchatForm();
-
+  } = achatForm;
   const values = watch();
   const prixNetVendeur = values.prixNetVendeur;
   const disabled = !prixNetVendeur || prixNetVendeur === 0;

@@ -9,7 +9,11 @@ import { ChartPieIcon, PlusCircleIcon, Trash2Icon } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { useDepensesForm } from "./useDepensesForm";
 
-export const DepensesForm = () => {
+type DepensesFormProps = {
+  depensesForm: ReturnType<typeof useDepensesForm>;
+};
+
+export const DepensesForm = ({ depensesForm }: DepensesFormProps) => {
   const {
     control,
     errors,
@@ -19,7 +23,7 @@ export const DepensesForm = () => {
     remove,
     totalDepenses,
     lots,
-  } = useDepensesForm();
+  } = depensesForm;
 
   return (
     <SectionLayout title="Dépenses" icon={ChartPieIcon}>

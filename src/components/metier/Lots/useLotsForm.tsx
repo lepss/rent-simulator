@@ -23,6 +23,7 @@ export const useLotsForm = () => {
     watch,
     control,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -86,6 +87,15 @@ export const useLotsForm = () => {
     setTotalVentesLots(calculateLots(validLots));
   }, [lots, setLots, setTotalVentesLots, setValue]);
 
+  // Nouvelle fonction pour importer / synchroniser finement
+  const setFormValues = (newValues: LotValues[]) => {
+    // Reset form with new values
+    reset({ lots: newValues });
+    // Mettre à jour store (peut être redondant si effet useEffect ci-dessus fonctionne bien)
+    setLots(newValues);
+    setTotalVentesLots(calculateLots(newValues));
+  };
+
   return {
     register,
     watch,
@@ -96,5 +106,6 @@ export const useLotsForm = () => {
     remove,
     errors,
     totalVentesLots,
+    setFormValues,
   };
 };

@@ -27,6 +27,7 @@ export const useDepensesForm = () => {
     watch,
     control,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -130,6 +131,15 @@ export const useDepensesForm = () => {
     }
   }, [lots, depenses, setDepenses, setTotalDepenses]);
 
+  // Nouvelle fonction pour importer / synchroniser finement
+  const setFormValues = (newValues: DepenseValues[]) => {
+    // Reset form with new values
+    reset({ depenses: newValues });
+    // Mettre à jour store (peut être redondant si effet useEffect ci-dessus fonctionne bien)
+    setDepenses(newValues);
+    setTotalDepenses(calculateDepenses(newValues));
+  };
+
   return {
     register,
     watch,
@@ -141,5 +151,6 @@ export const useDepensesForm = () => {
     remove,
     totalDepenses,
     lots,
+    setFormValues,
   };
 };

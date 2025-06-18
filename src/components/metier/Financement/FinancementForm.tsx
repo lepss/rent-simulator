@@ -6,7 +6,11 @@ import { ArrowLeftRightIcon, LandmarkIcon } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { useFinancementForm } from "./useFinancementForm";
 
-export const FinancementForm = () => {
+type FinancementFormProps = {
+  financementForm: ReturnType<typeof useFinancementForm>;
+};
+
+export const FinancementForm = ({ financementForm }: FinancementFormProps) => {
   const {
     control,
     watch,
@@ -14,7 +18,7 @@ export const FinancementForm = () => {
     totalFinancement,
     handleApportChange,
     handleTauxApportChange,
-  } = useFinancementForm();
+  } = financementForm;
 
   const values = watch();
   const apport = values.apport;

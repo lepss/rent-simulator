@@ -20,6 +20,7 @@ export const useFinancementForm = () => {
     watch,
     setValue,
     control,
+    reset,
     formState: { errors },
   } = useForm<FinancementValues>({
     resolver: zodResolver(financementSchema),
@@ -131,12 +132,22 @@ export const useFinancementForm = () => {
     setTotalFinancement(calculateFinancement(values));
   }, [values, setFinancement, setTotalFinancement]);
 
+  // Nouvelle fonction pour importer / synchroniser finement
+  const setFormValues = (newValues: FinancementValues) => {
+    // Reset form with new values
+    reset(newValues);
+    // Mettre à jour store (peut être redondant si effet useEffect ci-dessus fonctionne bien)
+    setFinancement(newValues);
+    setTotalFinancement(calculateFinancement(newValues));
+  };
+
   return {
     register,
     watch,
     control,
     errors,
     totalFinancement,
+    setFormValues,
     handleApportChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       lastEdited.current = "apport";
       register("apport").onChange(e);

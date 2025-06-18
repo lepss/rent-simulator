@@ -9,17 +9,13 @@ import { Layers3Icon, PlusCircleIcon, Trash2Icon } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { useLotsForm } from "./useLotsForm";
 
-// type FormValues = {
-//   lots: LotValues[];
-// };
+type LotsFormProps = {
+  lotsForm: ReturnType<typeof useLotsForm>;
+};
 
-// const formSchema = z.object({
-//   lots: lotSchema.array(),
-// });
-
-export const LotsForm = () => {
+export const LotsForm = ({ lotsForm }: LotsFormProps) => {
   const { control, errors, register, fields, append, remove, totalVentesLots } =
-    useLotsForm();
+    lotsForm;
 
   return (
     <SectionLayout title="lots" icon={Layers3Icon}>

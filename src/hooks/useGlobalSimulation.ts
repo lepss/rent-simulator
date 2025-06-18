@@ -22,6 +22,7 @@ interface SimulationState {
   setTotalDepenses: (data: number) => void;
   setFinancement: (data: FinancementValues) => void;
   setTotalFinancement: (data: number) => void;
+  setAll: (data: Partial<SimulationState>) => void;
 }
 
 export const useSimulationStore = create<SimulationState>()(
@@ -44,6 +45,7 @@ export const useSimulationStore = create<SimulationState>()(
         setTotalDepenses: (data: number) => set({ totalDepenses: data }),
         setFinancement: (data: FinancementValues) => set({ financement: data }),
         setTotalFinancement: (data: number) => set({ totalFinancement: data }),
+        setAll: (data) => set(data),
       }),
       {
         name: "simulation-storage",
