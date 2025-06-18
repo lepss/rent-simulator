@@ -179,7 +179,7 @@ export const LotsForm = () => {
           Ajouter un lot
         </Button>
       </div>
-      <Separator className="mt-4" />
+      <Separator className="mt-4 mb-2" />
       <div className="flex flex-col items-end font-bold uppercase">
         <p className="text-sm">Total ventes</p>
         <p className="text-2xl">{totalVentesLots.toLocaleString("fr-FR")} €</p>

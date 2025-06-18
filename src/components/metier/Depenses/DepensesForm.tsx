@@ -217,7 +217,7 @@ export const DepensesForm = () => {
         </Button>
       </div>
 
-      <Separator className="mt-4" />
+      <Separator className="mt-4 mb-2" />
       <div className="flex flex-col items-end font-bold uppercase">
         <p className="text-sm">Total dépenses</p>
         <p className="text-2xl">{totalDepenses.toLocaleString("fr-FR")} €</p>
