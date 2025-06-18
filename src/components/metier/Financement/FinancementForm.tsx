@@ -2,7 +2,11 @@ import { SectionLayout } from "@/components/layout/sectionLayout";
 import { Field } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 import { parseValue } from "@/lib/utils";
-import { ArrowLeftRightIcon, LandmarkIcon } from "lucide-react";
+import {
+  ArrowLeftRightIcon,
+  ArrowUpDownIcon,
+  LandmarkIcon,
+} from "lucide-react";
 import { Controller } from "react-hook-form";
 import { useFinancementForm } from "./useFinancementForm";
 
@@ -22,8 +26,8 @@ export const FinancementForm = () => {
 
   return (
     <SectionLayout title="financement" icon={LandmarkIcon}>
-      <form id="financement-form" className="flex flex-col gap-4">
-        <div className="flex w-full items-center gap-2">
+      <form id="financement-form" className="flex flex-col gap-5 md:gap-4">
+        <div className="flex flex-col w-full items-center gap-0 md:gap-2 md:flex-row">
           <Controller
             name="apport"
             control={control}
@@ -41,7 +45,8 @@ export const FinancementForm = () => {
               />
             )}
           />
-          <ArrowLeftRightIcon size={30} />
+          <ArrowLeftRightIcon size={30} className="hidden md:block" />
+          <ArrowUpDownIcon size={15} className="block md:hidden" />
           <Controller
             name="tauxApport"
             control={control}
@@ -61,7 +66,7 @@ export const FinancementForm = () => {
           />
         </div>
 
-        <div className="flex w-full items-center gap-2">
+        <div className="flex flex-col w-full items-center gap-0 md:flex-row md:gap-2">
           <Controller
             name="interetEmprunt"
             control={control}
@@ -110,7 +115,7 @@ export const FinancementForm = () => {
           />
         </div>
 
-        <div className="flex w-full items-center gap-2">
+        <div className="flex flex-col w-full items-center gap-0 md:gap-2 md:flex-row">
           <Controller
             name="commissionEngagement"
             control={control}
@@ -159,7 +164,7 @@ export const FinancementForm = () => {
           />
         </div>
 
-        <div className="flex w-full items-center gap-2">
+        <div className="flex flex-col w-full items-center gap-0 md:gap-2 md:flex-row">
           <Controller
             name="hypotheque"
             control={control}

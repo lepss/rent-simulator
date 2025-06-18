@@ -3,7 +3,7 @@ import { Field } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { parseValue } from "@/lib/utils";
-import { ArrowLeftRightIcon, HouseIcon } from "lucide-react";
+import { ArrowLeftRightIcon, ArrowUpDownIcon, HouseIcon } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { useAchatForm } from "./useAchatForm";
 
@@ -24,8 +24,8 @@ export const AchatForm = () => {
 
   return (
     <SectionLayout title="achats" icon={HouseIcon}>
-      <form id="achat-form" className="flex flex-col gap-4">
-        <div className="flex w-full items-center gap-2">
+      <form id="achat-form" className="flex flex-col gap-5 md:gap-4">
+        <div className="flex flex-col w-full items-center gap-0 md:flex-row md:gap-2">
           <Controller
             name="prixNetVendeur"
             control={control}
@@ -86,7 +86,7 @@ export const AchatForm = () => {
           />
         </div>
 
-        <div className="flex w-full items-center gap-2">
+        <div className="flex flex-col w-full items-center gap-0 md:flex-row md:gap-2">
           <Controller
             name="prixFAI"
             control={control}
@@ -121,7 +121,8 @@ export const AchatForm = () => {
               />
             )}
           />
-          <ArrowLeftRightIcon size={40} />
+          <ArrowLeftRightIcon size={40} className="hidden md:block" />
+          <ArrowUpDownIcon size={15} className="block md:hidden" />
           <Controller
             name="tauxAcquisition"
             control={control}

@@ -9,23 +9,18 @@ import { Layers3Icon, PlusCircleIcon, Trash2Icon } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { useLotsForm } from "./useLotsForm";
 
-// type FormValues = {
-//   lots: LotValues[];
-// };
-
-// const formSchema = z.object({
-//   lots: lotSchema.array(),
-// });
-
 export const LotsForm = () => {
   const { control, errors, register, fields, append, remove, totalVentesLots } =
     useLotsForm();
 
   return (
     <SectionLayout title="lots" icon={Layers3Icon}>
-      <form id="lots-form" className="flex flex-col gap-4">
+      <form id="lots-form" className="flex flex-col gap-10 md:gap-4">
         {fields.map((field, index) => (
-          <div key={field.id} className="flex w-full items-center gap-2">
+          <div
+            key={field.id}
+            className="flex flex-col w-full items-center gap-0 md:flex-row md:gap-2"
+          >
             <div className="w-full flex flex-col gap-2">
               <Label htmlFor={`lots.${index}.numero`}>N° Lot</Label>
               <Input
@@ -157,7 +152,7 @@ export const LotsForm = () => {
             <button
               type="button"
               onClick={() => remove(index)}
-              className="text-red-600 hover:text-red-800"
+              className="text-red-600 cursor-pointer hover:text-red-800"
               aria-label={`Supprimer le lot ${index + 1}`}
             >
               <Trash2Icon size={20} />

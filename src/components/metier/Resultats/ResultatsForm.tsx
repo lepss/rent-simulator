@@ -17,7 +17,7 @@ export const ResultatsForm = () => {
   return (
     <SectionLayout title="resultats" icon={ChartNoAxesCombinedIcon}>
       <div className="flex flex-col gap-8">
-        <div className="flex gap-8">
+        <div className="flex flex-col gap-8 md:flex-row md:gap-8">
           <Card
             label="Chiffres d'affaire"
             value={totalVentesLots}
@@ -37,7 +37,7 @@ export const ResultatsForm = () => {
             className="bg-gray-100"
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-8 md:flex-row md:gap-8">
           <Card label="TVA" value={"-"} unit={"€"} className="bg-gray-100" />
           <Card
             label="Marge nette de TVA"

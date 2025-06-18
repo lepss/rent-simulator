@@ -23,9 +23,12 @@ export const DepensesForm = () => {
 
   return (
     <SectionLayout title="Dépenses" icon={ChartPieIcon}>
-      <form id="depenses-form" className="flex flex-col gap-4">
+      <form id="depenses-form" className="flex flex-col gap-10 md:gap-6">
         {fields.map((field, index) => (
-          <div key={field.id} className="flex w-full items-center gap-2">
+          <div
+            key={field.id}
+            className="flex flex-col w-full items-center gap-0 md:gap-2 md:flex-row"
+          >
             <Controller
               name={`depenses.${index}.nom`}
               control={control}
@@ -147,7 +150,7 @@ export const DepensesForm = () => {
               name={`depenses.${index}.lotsIndex`}
               control={control}
               render={({ field }) => (
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-row gap-5 md:flex-col md:gap-1">
                   {lots.map((lot) => {
                     const isSelected = field.value?.includes(lot.id);
                     const toggleLot = () => {
@@ -184,7 +187,7 @@ export const DepensesForm = () => {
             <button
               type="button"
               onClick={() => remove(index)}
-              className="text-red-600 hover:text-red-800 ml-4"
+              className="text-red-600 hover:text-red-800 mt-4 ml-0 cursor-pointer md:ml-4 md:mt-0"
               aria-label={`Supprimer la dépense ${index + 1}`}
             >
               <Trash2Icon size={20} />
