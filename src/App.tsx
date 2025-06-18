@@ -11,12 +11,6 @@ function App() {
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
 
-  // const handlePrint = useReactToPrint({
-  //   content: () => componentRef.current,
-  //   documentTitle: "Rentability_Simulation",
-  //   // Optional: onBeforeGetContent, onAfterPrint, etc.
-  // });
-
   return (
     <main className="bg-gray-50">
       <div className="container mx-auto flex min-h-screen flex-col gap-4">
