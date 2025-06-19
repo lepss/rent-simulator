@@ -4,15 +4,12 @@ import { useSimulationStore } from "@/hooks/useGlobalSimulation";
 import { ChartNoAxesCombinedIcon } from "lucide-react";
 
 export const ResultatsForm = () => {
-  const achatTotal = useSimulationStore((s) => s.achatTotal);
-  const totalDepenses = useSimulationStore((s) => s.totalDepenses);
-  const totalFinancement = useSimulationStore((s) => s.totalFinancement);
-  const totalVentesLots = useSimulationStore((s) => s.totalVentesLots);
-
-  const coutTotal =
-    (achatTotal ?? 0) + (totalDepenses ?? 0) + (totalFinancement ?? 0);
-
-  const marge = totalVentesLots - coutTotal;
+  const coutTotal = useSimulationStore((s) => s.coutTotal());
+  const TVA = useSimulationStore((s) => s.TVA());
+  const marge = useSimulationStore((s) => s.marge());
+  const margeNetteTVA = useSimulationStore((s) => s.margeNetteTVA());
+  const rentabilite = useSimulationStore((s) => s.rentabilite());
+  const totalVentesLots = useSimulationStore((s) => s.totalVentesLots());
 
   return (
     <SectionLayout title="resultats" icon={ChartNoAxesCombinedIcon}>
@@ -38,16 +35,16 @@ export const ResultatsForm = () => {
           />
         </div>
         <div className="flex flex-col gap-8 md:flex-row md:gap-8">
-          <Card label="TVA" value={"-"} unit={"€"} className="bg-gray-100" />
+          <Card label="TVA" value={TVA} unit={"€"} className="bg-gray-100" />
           <Card
             label="Marge nette de TVA"
-            value={"-"}
+            value={margeNetteTVA}
             unit={"€"}
             className="bg-gray-100"
           />
           <Card
             label="Rentabilité"
-            value={"-"}
+            value={rentabilite}
             unit={"%"}
             className="bg-amber-400"
           />

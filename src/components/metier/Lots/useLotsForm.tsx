@@ -3,8 +3,8 @@ import { lotSchema, type LotValues } from "@/lib/validations/lot.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { useDebounce } from "use-debounce";
 import { z } from "zod";
-import { calculateLots } from "./useLots";
 
 type FormValues = {
   lots: LotValues[];
@@ -15,8 +15,8 @@ const formSchema = z.object({
 });
 export const useLotsForm = () => {
   const setLots = useSimulationStore((e) => e.setLots);
-  const setTotalVentesLots = useSimulationStore((e) => e.setTotalVentesLots);
-  const totalVentesLots = useSimulationStore((e) => e.totalVentesLots);
+  const totalVentesLots = useSimulationStore((e) => e.totalVentesLots());
+  const achat = useSimulationStore.getState().achat;
 
   const {
     register,
@@ -35,8 +35,9 @@ export const useLotsForm = () => {
           prixVente: 0,
           surface: 0,
           prixM2: 0,
-          tva: "exonere",
+          regimeTVA: "exonere",
           ponderation: 0,
+          tva: 0,
         },
       ],
     },
@@ -45,9 +46,10 @@ export const useLotsForm = () => {
   const { fields, append, remove } = useFieldArray({ control, name: "lots" });
 
   const lots = useWatch({ control, name: "lots" });
+  const [debouncedLots] = useDebounce(lots, 500); // ✅ debounce 500ms
 
   useEffect(() => {
-    if (!lots) return;
+    if (!debouncedLots) return;
 
     const updatedLots = lots.map((lot, i) => ({
       ...lot,
@@ -77,14 +79,33 @@ export const useLotsForm = () => {
         typeof lot.prixVente === "number" &&
         typeof lot.surface === "number" &&
         typeof lot.prixM2 === "number" &&
-        typeof lot.tva === "string" &&
+        typeof lot.regimeTVA === "string" &&
         typeof lot.ponderation === "number"
     );
 
+    //Calcul de la TVA pour chaque lot en fonction du regime de TVA et du prix net de vendeur de achat -> TAUX tva = 20%
+    const TauxTVA = 20;
+    validLots.forEach((lot) => {
+      if (lot.regimeTVA === "exonere") {
+        lot.tva = 0;
+      } else if (lot.regimeTVA === "integral") {
+        const prixTTC = lot.prixVente;
+        const prixHT = prixTTC / (1 + TauxTVA / 100);
+        lot.tva = prixTTC - prixHT;
+      } else if (lot.regimeTVA === "marge") {
+        if (achat?.prixNetVendeur) {
+          const marge =
+            lot.prixVente - (achat?.prixNetVendeur * lot.ponderation) / 100;
+          const prixTTC = marge;
+          const prixHT = prixTTC / (1 + TauxTVA / 100);
+          lot.tva = prixTTC - prixHT;
+        }
+      }
+    });
+
     // MAJ du store
     setLots(validLots);
-    setTotalVentesLots(calculateLots(validLots));
-  }, [lots, setLots, setTotalVentesLots, setValue]);
+  }, [setLots, setValue, achat?.prixNetVendeur, debouncedLots]);
 
   return {
     register,

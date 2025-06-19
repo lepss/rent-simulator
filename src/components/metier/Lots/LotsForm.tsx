@@ -107,32 +107,32 @@ export const LotsForm = () => {
               )}
             />
             <Controller
-              name={`lots.${index}.tva`}
+              name={`lots.${index}.regimeTVA`}
               control={control}
               render={({ field }) => (
                 <div className="w-full flex flex-col gap-2">
-                  <Label htmlFor={`lots.${index}.tva`}>TVA</Label>
+                  <Label htmlFor={`lots.${index}.tva`}>Regime TVA</Label>
                   <select
-                    id={`lots.${index}.tva`}
+                    id={`lots.${index}.regimeTVA`}
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.value)}
                     className="w-full border-input data-[placeholder]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 print:bg-white print:border-none print:shadow-none print:appearance-none print:text-xl"
-                    aria-invalid={!!errors.lots?.[index]?.tva}
-                    aria-describedby={`lots.${index}.tva-error`}
+                    aria-invalid={!!errors.lots?.[index]?.regimeTVA}
+                    aria-describedby={`lots.${index}.regimetva-error`}
                   >
                     <option value="exonere">Exonéré de TVA</option>
                     <option value="marge">TVA sur marge</option>
                     <option value="integral">TVA intégral</option>
                   </select>
                   <p
-                    id={`lots.${index}.tva-error`}
+                    id={`lots.${index}.regimetva-error`}
                     className={`text-sm h-4 transition-all ${
-                      errors.lots?.[index]?.tva
+                      errors.lots?.[index]?.regimeTVA
                         ? "text-red-500"
                         : "text-transparent"
                     }`}
                   >
-                    {errors.lots?.[index]?.tva?.message || ""}
+                    {errors.lots?.[index]?.regimeTVA?.message || ""}
                   </p>
                 </div>
               )}
@@ -176,8 +176,9 @@ export const LotsForm = () => {
               prixVente: 0,
               surface: 0,
               prixM2: 0,
-              tva: "exonere",
+              regimeTVA: "exonere",
               ponderation: 0,
+              tva: 0,
             })
           }
         >

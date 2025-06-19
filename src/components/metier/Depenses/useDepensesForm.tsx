@@ -6,8 +6,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { useDebounce } from "use-debounce";
 import { z } from "zod";
-import { calculateDepenses } from "./useDepenses";
 
 type FormValues = {
   depenses: DepenseValues[];
@@ -18,8 +18,7 @@ const formSchema = z.object({
 });
 export const useDepensesForm = () => {
   const setDepenses = useSimulationStore((s) => s.setDepenses);
-  const setTotalDepenses = useSimulationStore((s) => s.setTotalDepenses);
-  const totalDepenses = useSimulationStore((s) => s.totalDepenses);
+  const totalDepenses = useSimulationStore((s) => s.totalDepenses());
   const lots = useSimulationStore((s) => s.lots);
 
   const {
@@ -37,7 +36,7 @@ export const useDepensesForm = () => {
           id: 0,
           nom: "",
           prixHT: 0,
-          tauxTVA: 0,
+          tauxTVA: 20,
           TVA: 0,
           prixTTC: 0,
           quantite: 1,
@@ -53,9 +52,10 @@ export const useDepensesForm = () => {
   });
 
   const depenses = useWatch({ control, name: "depenses" });
+  const [debouncedDepenses] = useDebounce(depenses, 500); // ✅ debounce 500ms
 
   useEffect(() => {
-    if (!depenses) return;
+    if (!debouncedDepenses) return;
 
     const updated = depenses.map((d, i) => ({
       ...d,
@@ -101,8 +101,7 @@ export const useDepensesForm = () => {
     );
 
     setDepenses(validDepenses);
-    setTotalDepenses(calculateDepenses(validDepenses));
-  }, [depenses, setDepenses, setTotalDepenses, setValue]);
+  }, [debouncedDepenses, setDepenses, setValue]);
 
   useEffect(() => {
     if (!depenses || !Array.isArray(lots)) return;
@@ -126,9 +125,8 @@ export const useDepensesForm = () => {
 
     if (hasChanged) {
       setDepenses(cleanedDepenses);
-      setTotalDepenses(calculateDepenses(cleanedDepenses));
     }
-  }, [lots, depenses, setDepenses, setTotalDepenses]);
+  }, [lots, depenses, setDepenses]);
 
   return {
     register,

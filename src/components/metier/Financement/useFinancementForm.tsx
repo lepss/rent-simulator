@@ -6,14 +6,12 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { calculateFinancement } from "./useFinancement";
 
 export const useFinancementForm = () => {
   const setFinancement = useSimulationStore((s) => s.setFinancement);
-  const setTotalFinancement = useSimulationStore((s) => s.setTotalFinancement);
-  const totalFinancement = useSimulationStore((s) => s.totalFinancement);
-  const coutTotalAchat = useSimulationStore((s) => s.achatTotal);
-  const coutTotalDepenses = useSimulationStore((s) => s.totalDepenses);
+  const totalFinancement = useSimulationStore((s) => s.totalFinancement());
+  const coutTotalAchat = useSimulationStore((s) => s.achatTotal());
+  const coutTotalDepenses = useSimulationStore((s) => s.totalDepenses());
 
   const {
     register,
@@ -28,13 +26,13 @@ export const useFinancementForm = () => {
       apport: 0,
       tauxApport: 0,
       interetEmprunt: 0,
-      tauxInteret: 0,
-      dureeRemboursementEmprunt: 0,
+      tauxInteret: 7,
+      dureeRemboursementEmprunt: 12,
       commissionEngagement: 0,
-      tauxCommissionEngagement: 0,
-      dureeRemboursementCommissionEngagement: 0,
+      tauxCommissionEngagement: 1,
+      dureeRemboursementCommissionEngagement: 12,
       hypotheque: 0,
-      tauxHypotheque: 0,
+      tauxHypotheque: 1,
       fraisDossier: 0,
     },
   });
@@ -128,8 +126,7 @@ export const useFinancementForm = () => {
   //Store values + calcul du total financement
   useEffect(() => {
     setFinancement(values);
-    setTotalFinancement(calculateFinancement(values));
-  }, [values, setFinancement, setTotalFinancement]);
+  }, [values, setFinancement]);
 
   return {
     register,

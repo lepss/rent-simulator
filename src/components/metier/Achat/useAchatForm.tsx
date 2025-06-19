@@ -1,14 +1,12 @@
 import { useSimulationStore } from "@/hooks/useGlobalSimulation";
 import { achatSchema, type AchatValues } from "@/lib/validations/achat.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { calculateAchat } from "./useAchat";
 
 export const useAchatForm = () => {
   const setAchat = useSimulationStore((s) => s.setAchat);
-  const setAchatTotal = useSimulationStore((s) => s.setAchatTotal);
-  const achatTotal = useSimulationStore((s) => s.achatTotal);
+  const achatTotal = useSimulationStore((s) => s.achatTotal());
 
   const {
     register,
@@ -30,14 +28,16 @@ export const useAchatForm = () => {
     },
   });
 
-  const values = watch();
-
-  const prixNetVendeur = useWatch({ name: "prixNetVendeur", control });
-  const fraisAgence = useWatch({ name: "fraisAgence", control });
-  const aCharge = useWatch({ name: "aCharge", control });
-  const prixFAI = useWatch({ name: "prixFAI", control });
-  const taux = useWatch({ name: "tauxAcquisition", control });
-  const frais = useWatch({ name: "fraisAcquisition", control });
+  const watchedValues = useWatch<AchatValues>({ control });
+  const {
+    prixNetVendeur = 0,
+    fraisAgence = 0,
+    aCharge = "acquereur",
+    prixFAI = 0,
+    tauxAcquisition = 0,
+    fraisAcquisition = 0,
+    fraisAvocat = 0,
+  } = watchedValues ?? {};
 
   const lastEdited = useRef<"frais" | "taux" | null>(null);
 
@@ -51,38 +51,76 @@ export const useAchatForm = () => {
   // Calcul du frais en fonction du taux si Prix FAI est renseigné
   useEffect(() => {
     if (lastEdited.current === "taux" && prixFAI) {
-      const newFrais = Math.round(prixFAI * (Number(taux) / 100));
-      setValue("fraisAcquisition", newFrais);
+      const newFrais = Math.round(prixFAI * (Number(tauxAcquisition) / 100));
+      if (newFrais !== fraisAcquisition) setValue("fraisAcquisition", newFrais);
     }
-  }, [taux, prixFAI, setValue]);
+  }, [fraisAcquisition, tauxAcquisition, prixFAI, setValue]);
 
   // Calcul du taux en fonction du frais si Prix FAI est renseigné
   useEffect(() => {
     if (lastEdited.current === "frais" && prixFAI) {
-      const newTaux = (Number(frais) / prixFAI) * 100;
-      setValue("tauxAcquisition", Math.round(newTaux * 100) / 100);
+      const newTaux = (Number(fraisAcquisition) / prixFAI) * 100;
+      if (newTaux !== tauxAcquisition)
+        setValue("tauxAcquisition", Math.round(newTaux * 100) / 100);
     }
-  }, [frais, prixFAI, setValue]);
+  }, [tauxAcquisition, fraisAcquisition, prixFAI, setValue]);
 
-  // Store values + calcul du prix total achat
-  useEffect(() => {
-    setAchat(values);
-    setAchatTotal(calculateAchat(values));
-  }, [values, setAchat, setAchatTotal]);
-
-  return {
-    register,
-    watch,
-    control,
-    errors,
-    handleFraisChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFraisChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       lastEdited.current = "frais";
       register("fraisAcquisition").onChange(e);
     },
-    handleTauxChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+    [register]
+  );
+
+  const handleTauxChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       lastEdited.current = "taux";
       register("tauxAcquisition").onChange(e);
     },
-    achatTotal,
-  };
+    [register]
+  );
+
+  // Store values
+  useEffect(() => {
+    setAchat({
+      prixNetVendeur,
+      fraisAgence,
+      aCharge,
+      prixFAI,
+      tauxAcquisition,
+      fraisAcquisition,
+      fraisAvocat,
+    });
+  }, [
+    prixNetVendeur,
+    fraisAgence,
+    aCharge,
+    prixFAI,
+    tauxAcquisition,
+    fraisAcquisition,
+    fraisAvocat,
+    setAchat,
+  ]);
+
+  return useMemo(
+    () => ({
+      register,
+      control,
+      errors,
+      watch,
+      achatTotal,
+      handleFraisChange,
+      handleTauxChange,
+    }),
+    [
+      watch,
+      register,
+      control,
+      errors,
+      achatTotal,
+      handleFraisChange,
+      handleTauxChange,
+    ]
+  );
 };
