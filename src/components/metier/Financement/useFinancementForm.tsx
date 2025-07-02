@@ -33,7 +33,7 @@ export const useFinancementForm = () => {
       dureeRemboursementCommissionEngagement: 12,
       hypotheque: 0,
       tauxHypotheque: 1,
-      fraisDossier: 0,
+      fraisDossier: 3500,
     },
   });
 

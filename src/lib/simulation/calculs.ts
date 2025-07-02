@@ -95,19 +95,50 @@ export function getCoutTotal(
   );
 }
 
+// export function getMargeParLot(
+//   lots: LotValues[],
+//   achat: AchatValues | null
+// ): Record<string, number> {
+//   const margeMap: Record<string, number> = {};
+//   lots.forEach((lot) => {
+//     margeMap[lot.id] =
+//       (lot.prixVente ?? 0) -
+//       (achat?.prixNetVendeur ?? 0) * (lot.ponderation / 100);
+//   });
+//   return margeMap;
+// }
+
+// export function getTvaCollecteeParLot(
+//   lots: LotValues[]
+// ): Record<string, number> {
+//   const tvaMap: Record<string, number> = {};
+//   lots.forEach((lot) => {
+//     switch (lot.regimeTVA) {
+//       case "exonere":
+//         tvaMap[lot.id] = 0;
+//         break;
+//       case "integral":
+//         tvaMap[lot.id] = lot.tva ?? 0;
+//         break;
+//       case "marge":
+//         tvaMap[lot.id] = (lot.tva ?? 0) * (lot.ponderation / 100);
+//         break;
+//       default:
+//         tvaMap[lot.id] = lot.tva ?? 0;
+//         break;
+//     }
+//   });
+//   return tvaMap;
+// }
+
 /**
  * Calculates the total TVA collected from all lots.
  * @param {LotValues[]} lots - An array of LotValues objects.
  * @returns {number} The total TVA collected as a number.
  */
-/**
- *
- *
- *
- */
-export function getTvaCollectee(lots: LotValues[]): number {
-  return lots.reduce((total, lot) => total + (lot.tva ?? 0), 0);
-}
+// export function getTvaCollectee(lots: LotValues[]): number {
+//   return lots.reduce((total, lot) => total + (lot.tva ?? 0), 0);
+// }
 
 /**
  * Répartit la TVA déductible pour chaque lot
@@ -119,20 +150,50 @@ export function getTvaCollectee(lots: LotValues[]): number {
  * et la TVA déductible pour chaque lot comme valeur
  */
 export function getTvaDeductibleParLot(
-  depenses: DepenseValues[]
+  depenses: DepenseValues[],
+  lots: LotValues[]
 ): Record<string, number> {
   const tvaMap: Record<string, number> = {};
+
   depenses.forEach((dep) => {
     const tva = dep.TVA ?? 0;
     const refs = dep.lotsIndex ?? [];
-    if (refs.length === 0) return;
-    const part = tva / refs.length; //TODO C'est ok mais ajouté la pondération du lots dans le calculs
-    refs.forEach((id) => {
-      tvaMap[id] = (tvaMap[id] ?? 0) + part;
+    if (refs.length === 0 || tva === 0) return;
+
+    // On récupère les lots concernés
+    const lotsConcernés = lots.filter((lot) => refs.includes(lot.id));
+
+    // On calcule la somme des pondérations
+    const totalPonderation = lotsConcernés.reduce(
+      (sum, lot) => sum + lot.ponderation,
+      0
+    );
+
+    if (totalPonderation === 0) return;
+
+    lotsConcernés.forEach((lot) => {
+      const part = (lot.ponderation / totalPonderation) * tva;
+      tvaMap[lot.id] = (tvaMap[lot.id] ?? 0) + part;
     });
   });
-  console.log("tvaMap", tvaMap);
 
+  // console.log("tvaMap", tvaMap);
+  return tvaMap;
+}
+
+export function getTvaFinalParLot(
+  lots: LotValues[],
+  tvaDeductibleParLotMap: Record<string, number>
+): Record<string, number> {
+  const tvaMap: Record<string, number> = {};
+  lots.forEach((lot) => {
+    const tvaInitiale = lot.tva ?? 0;
+    const tvaDéductible = tvaDeductibleParLotMap[lot.id] ?? 0;
+    const tvaFinale = tvaInitiale - tvaDéductible;
+
+    // Forcer à 0 si négatif
+    tvaMap[lot.id] = Math.max(0, tvaFinale);
+  });
   return tvaMap;
 }
 
@@ -147,10 +208,13 @@ export function getTvaDeductibleParLot(
  * @returns The total deductible TVA as a number.
  */
 
-export function getTvaDeductibleTotale(depenses: DepenseValues[]): number {
-  const map = getTvaDeductibleParLot(depenses);
-  return Object.values(map).reduce((acc, v) => acc + v, 0);
-}
+// export function getTvaDeductibleTotale(
+//   depenses: DepenseValues[],
+//   lots: LotValues[]
+// ): number {
+//   const map = getTvaDeductibleParLot(depenses, lots);
+//   return Object.values(map).reduce((acc, v) => acc + v, 0);
+// }
 
 /**
  * Calculates the net TVA by subtracting the total deductible TVA from the total collected TVA.
@@ -165,18 +229,10 @@ export function getTvaDeductibleTotale(depenses: DepenseValues[]): number {
  */
 
 export function getTVA(lots: LotValues[], depenses: DepenseValues[]): number {
-  const tvaCollectee = getTvaCollectee(lots);
-  const tvaDeductible = getTvaDeductibleTotale(depenses);
-  // console.log(
-  //   "tvaCollectee",
-  //   tvaCollectee,
-  //   "tvaDeductible",
-  //   tvaDeductible,
-  //   "total",
-  //   Math.max(0, tvaCollectee - tvaDeductible)
-  // );
-
-  return Math.max(0, tvaCollectee - tvaDeductible);
+  const tvaDeductibleParLotMap = getTvaDeductibleParLot(depenses, lots);
+  const tvaFinalParLot = getTvaFinalParLot(lots, tvaDeductibleParLotMap);
+  const tvaFinal = Object.values(tvaFinalParLot).reduce((acc, v) => acc + v, 0);
+  return Math.max(0, tvaFinal);
 }
 
 export function getMarge(

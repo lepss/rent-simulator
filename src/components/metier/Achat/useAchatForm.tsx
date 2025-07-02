@@ -23,7 +23,7 @@ export const useAchatForm = () => {
       prixFAI: 0,
       aCharge: "acquereur",
       fraisAcquisition: 0,
-      tauxAcquisition: 0,
+      tauxAcquisition: 3,
       fraisAvocat: 0,
     },
   });
@@ -34,7 +34,7 @@ export const useAchatForm = () => {
     fraisAgence = 0,
     aCharge = "acquereur",
     prixFAI = 0,
-    tauxAcquisition = 0,
+    tauxAcquisition = 3,
     fraisAcquisition = 0,
     fraisAvocat = 0,
   } = watchedValues ?? {};
@@ -64,6 +64,16 @@ export const useAchatForm = () => {
         setValue("tauxAcquisition", Math.round(newTaux * 100) / 100);
     }
   }, [tauxAcquisition, fraisAcquisition, prixFAI, setValue]);
+
+  // Recalcule automatique fraisAcquisition à partir du taux par défaut quand prixFAI change
+  useEffect(() => {
+    if (lastEdited.current === null && prixFAI) {
+      const newFrais = Math.round(prixFAI * (Number(tauxAcquisition) / 100));
+      if (newFrais !== fraisAcquisition) {
+        setValue("fraisAcquisition", newFrais);
+      }
+    }
+  }, [prixFAI, tauxAcquisition, fraisAcquisition, setValue]);
 
   const handleFraisChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
+import { ExportButton } from "./components/exportButton";
 import { AchatForm } from "./components/metier/Achat/AchatForm";
 import { DepensesForm } from "./components/metier/Depenses/DepensesForm";
 import { FinancementForm } from "./components/metier/Financement/FinancementForm";
@@ -21,7 +22,7 @@ function App() {
         </header>
         <div className="flex items-center justify-center gap-4">
           <Button onClick={reactToPrintFn}>Export PDF</Button>
-          <Button>Export JSON</Button>
+          <ExportButton />
           <Button>Import JSON</Button>
         </div>
         <div

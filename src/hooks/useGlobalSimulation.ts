@@ -8,9 +8,7 @@ import {
   getTotalFinancement,
   getTotalVentesLots,
   getTVA,
-  getTvaCollectee,
   getTvaDeductibleParLot,
-  getTvaDeductibleTotale,
 } from "@/lib/simulation/calculs";
 import type { AchatValues } from "@/lib/validations/achat.schema";
 import type { DepenseValues } from "@/lib/validations/depense.schema";
@@ -37,9 +35,9 @@ interface SimulationState {
   totalDepenses: () => number;
   totalFinancement: () => number;
   coutTotal: () => number;
-  tvaCollectee: () => number;
+  // tvaCollectee: () => number;
   tvaDeductibleParLot: () => Record<string, number>;
-  tvaDeductibleTotale: () => number;
+  // tvaDeductibleTotale: () => number;
   TVA: () => number;
   marge: () => number;
   margeNetteTVA: () => number;
@@ -68,9 +66,12 @@ export const useSimulationStore = create<SimulationState>()(
         totalFinancement: () => getTotalFinancement(get().financement),
         coutTotal: () =>
           getCoutTotal(get().achat, get().depenses, get().financement),
-        tvaCollectee: () => getTvaCollectee(get().lots),
-        tvaDeductibleParLot: () => getTvaDeductibleParLot(get().depenses),
-        tvaDeductibleTotale: () => getTvaDeductibleTotale(get().depenses),
+
+        // tvaCollectee: () => getTvaCollectee(get().lots),
+        tvaDeductibleParLot: () =>
+          getTvaDeductibleParLot(get().depenses, get().lots),
+        // tvaDeductibleTotale: () =>
+        //   getTvaDeductibleTotale(get().depenses, get().lots),
         TVA: () => getTVA(get().lots, get().depenses),
         marge: () =>
           getMarge(get().achat, get().depenses, get().financement, get().lots),
